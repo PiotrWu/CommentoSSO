@@ -28,7 +28,10 @@ namespace CommentoSSO.Controllers
             return View();
         }
 
-        
+        public IActionResult Sso(string token, string hmac)
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
