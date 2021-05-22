@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CommentoSSO.Controllers
@@ -38,6 +39,19 @@ namespace CommentoSSO.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        public static string FromHexString(string hexString)
+        {
+            string stringValue = "";
+            for (int i = 0; i < hexString.Length / 2; i++)
+            {
+                string hexChar = hexString.Substring(i * 2, 2);
+                int hexValue = Convert.ToInt32(hexChar, 16);
+                stringValue += Char.ConvertFromUtf32(hexValue);
+            }
+            return stringValue;
         }
     }
 }
