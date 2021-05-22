@@ -28,9 +28,11 @@ namespace CommentoSSO.Controllers
             return View();
         }
 
+        [Route("Sso")]
         public IActionResult Sso(string token, string hmac)
         {
-            return View();
+            CommentoSsoRequest commentoSsoRequest = new CommentoSsoRequest(token, hmac);
+            return View(commentoSsoRequest);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
