@@ -36,8 +36,12 @@ namespace CommentoSSO.Controllers
         [Route("Sso")]
         public IActionResult Sso(string token, string hmac)
         {
-            
-
+            string key = "d743c678e26b725c6c1fb4941a02f8c124583dd72b54cb59c4c39f43826d75ea";
+            string expectedHmac = HashHMACHex(key, token);
+            if (expectedHmac!=hmac)
+            {
+                return View("Error", new ErrorViewModel { RequestId = token });
+            }
             CommentoSsoRequest commentoSsoRequest = new CommentoSsoRequest(token, hmac);
 
             return View(commentoSsoRequest);
