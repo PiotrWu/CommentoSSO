@@ -43,8 +43,19 @@ namespace CommentoSSO.Controllers
                 return View("Error", new ErrorViewModel { RequestId = token });
             }
             CommentoSsoRequest commentoSsoRequest = new CommentoSsoRequest(token, hmac);
-
-            return View(commentoSsoRequest);
+            CommentoSsoPayload commentoSsoPayload = new CommentoSsoPayload()
+            {
+                token = token,
+                name = "testName",
+                email = "email@email.com",
+                link = "someLink",
+                photo = "url"
+            };
+            //hmac = hex - encode(hmac - sha256(payload - json, secret - key))
+            string payloadHmac = HMAC(key, commentoSsoPayload.ToJson());
+            var payloadHex = HexEncode(commentoSsoPayload.ToJson());
+            return Redirect("https://commento.io/api/oauth/sso/callback?payload=" + payloadHex + "&hmac=" + payloadHmac);
+            //return View(commentoSsoRequest);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -74,6 +85,12 @@ namespace CommentoSSO.Controllers
             return HashEncode(hash);
         }
 
+        public static string HMAC(string keyHex, string message)
+        {
+            byte[] hash = HashHMAC(HexDecode(keyHex), Encoding.UTF8.GetBytes(message));
+            return HashEncode(hash);
+        }
+
         private static byte[] HexDecode(string hex)
         {
             var bytes = new byte[hex.Length / 2];
@@ -82,6 +99,14 @@ namespace CommentoSSO.Controllers
                 bytes[i] = byte.Parse(hex.Substring(i * 2, 2), NumberStyles.HexNumber);
             }
             return bytes;
+        }
+
+        private static string HexEncode(string message)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            var hexString = BitConverter.ToString(bytes);
+            hexString = hexString.Replace("-", "");
+            return hexString;
         }
         private static string HashEncode(byte[] hash)
         {
